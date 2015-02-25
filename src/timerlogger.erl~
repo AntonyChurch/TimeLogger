@@ -1,0 +1,12 @@
+-module(timerlogger).
+-export([start/0, logtime/2, viewall/1]).
+
+start() ->
+    ets:new(times, duplicate_bag).
+
+logtime(TableId, Code, Desc) ->
+    ets:insert(TableId, {Code, Desc}).
+
+viewall(TableId) ->
+    ets:tab2list(TableId).
+    
