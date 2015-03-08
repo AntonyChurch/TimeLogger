@@ -1,6 +1,9 @@
 # TimeLogger
 Erlang console based time logger.
 
+##Notes
+timelogger_otp1.erl is my first solo gen_server module. I'm going to be steadily improving it.
+
 ##To Use
 This software is written with rebar so all compilation and running can be done the standard way.
 1. Call timelogger:start(). Storing the return value, it is the Table Id used throughout the application.
