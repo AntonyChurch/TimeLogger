@@ -23,19 +23,23 @@ logtime(Code, Desc) ->
 viewall() ->
     gen_server:call(?MODULE, viewall).
 
-init([]) -> {ok, ets:new(?MODULE, [])}.
+init([]) ->
+		{ok, Ref} = dets:open_file(test, []),
+		{ok, Ref}.
 
-handle_call({logtime, Code, Desc}, _From, Table) -> 
-    Reply = ets:insert(Table, {Code, Desc, erlang:time()}),
+handle_call({logtime, Code, Desc}, _From, Table) ->
+    Reply = dets:insert(Table, {Code, Desc, erlang:time()}),
     {reply, Reply, Table};
-handle_call(viewall, _From, Table) -> 
-    Reply = ets:tab2list(Table),
+handle_call(viewall, _From, Table) ->
+		EtsTable = ets:new(times, []),
+    Reply = ets:tab2list(dets:to_ets(Table, EtsTable)),
+		ets:delete(EtsTable),
     {reply, Reply, Table};
-handle_call(stop, _From, Table) -> 
+handle_call(stop, _From, Table) ->
+		dets:close(Table),
     {stop, normal, stopped, Table}.
 
 handle_cast(_Msg, State) -> {noreply, State}.
 handle_info(_Info, State) -> {noreply, State}.
 terminate(_Reason, _State) -> ok.
 code_change(_OldVsn, State, Extra) -> {ok, State}.
-
